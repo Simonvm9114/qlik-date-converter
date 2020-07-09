@@ -11,7 +11,7 @@
     "nodemon": "^2.0.4"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/qdc.js",
     "dev": "nodemon src/qdc.js -e js"
   },
   "keywords": [],
