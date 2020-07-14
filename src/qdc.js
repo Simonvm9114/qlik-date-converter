@@ -1,6 +1,7 @@
 const path = require('path')
 const express = require('express')
 const moment = require('moment')
+const validator = require('validator')
 
 const app = express()
 const port = process.env.PORT || 3005
@@ -18,19 +19,45 @@ app.get('', (req, res) => {
 app.get('/date', (req, res) => {
     if (!req.query.number) {
         return res.send({
-            error: 'You must provide an address'
+            error: 'Number parameter is required.'
+        })
+    }
+
+    if (!validator.isInt(req.query.number)) {
+        return res.send({
+            error: 'Invalid data type: only integer numbers are allowed.'
         })
     }
 
     const qlikRootDate = moment("30-12-1899", "DD-MM-YYYY")
     const convertedDate = qlikRootDate.add(req.query.number, 'd').format('DD-MM-YYYY').toString()
-    
-    console.log(convertedDate)
-    console.log(qlikRootDate)
 
     return res.send({
         status: 'Success',
         date: convertedDate
+    })
+})
+
+app.get('/number', (req, res) => {
+    if (!req.query.date) {
+        return res.send({
+            error: 'Date parameter is required.'
+        })
+    }
+
+    if (!validator.isDate(req.query.date, 'YYYY-MM-DD')) {
+        return res.send({
+            error: "Invalid data type. Only datestrings formatted as YYYY-MM-DD are allowed."
+        })
+    }
+
+    const qlikRootDate = moment("30-12-1899", "DD-MM-YYYY")
+    const dateToCalculate = moment(req.query.date, "YYYY-MM-DD")
+    const convertedNumber = dateToCalculate.diff(qlikRootDate, 'days')
+
+    return res.send({
+        status: 'Success',
+        number: convertedNumber
     })
 })
 
